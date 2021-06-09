@@ -30,15 +30,14 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TemanAdapter adapter;
-    private ArrayList<Teman> temanArrayList;
-    String id, nm, tlp;
+    private ArrayList<Teman> temanArrayList = new ArrayList<>();
     private FloatingActionButton fab;
+
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static String url_select = "http://10/0/2/2/umyTI/bacateman.php";
-    public static final String TAG_ID = "id";
-    public static final String TAG_NAMA = "nama";
-    public static final String TAG_TELPON = "telpon";
-   
+    private static String url_select = "http://10.0.2.2/umyTI/bacateman.php";
+    private static final String TAG_ID = "id";
+    private static final String TAG_NAMA = "nama";
+    private static final String TAG_TELPON = "telpon";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,24 +46,26 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         fab = findViewById(R.id.floatingBtn);
+        BacaData();
         adapter = new TemanAdapter(temanArrayList);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TambahTeman.class);
+                Intent intent = new Intent(MainActivity.this,TambahTeman.class);
                 startActivity(intent);
+
             }
         });
+
     }
 
-    public void BacaData() {
+    public void BacaData(){
+        temanArrayList.clear();
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-
         JsonArrayRequest jArr = new JsonArrayRequest(url_select, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -81,17 +82,19 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                adapter.notifyDataSetChanged();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error:" + error.getMessage());
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
                 error.printStackTrace();
                 Toast.makeText(MainActivity.this, "gagal", Toast.LENGTH_SHORT).show();
             }
         });
         requestQueue.add(jArr);
     }
+
 }
 
 
